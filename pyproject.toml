@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "django_genc"
-version = "0.1.0"
+name = "django-genc"
+version = "0.1.2"
 description = "A django app for working with GENC country codes"
 readme = "README.md"
 requires-python = ">=3.11"
