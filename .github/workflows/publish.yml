@@ -1,0 +1,28 @@
+name: Publish to PyPI
+
+# A published GitHub release builds the wheel and sdist and uploads them through PyPI trusted publishing, so no API token lives in the repo or on a laptop.
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+      # Refuses to publish a release whose tag doesn't match the package version, which would otherwise ship the old number under a new tag.
+      - name: Check tag matches version
+        run: |
+          version="$(grep -m1 '^version = ' pyproject.toml | cut -d'"' -f2)"
+          test "${GITHUB_REF_NAME#v}" = "$version" || { echo "tag ${GITHUB_REF_NAME} != pyproject version ${version}"; exit 1; }
+      - run: uv build
+      - name: Wheel ships only the package
+        run: |
+          extra="$(unzip -Z1 dist/*.whl | grep -v -E '^(django_genc/|django_genc-[^/]+\.dist-info/)' || true)"
+          test -z "$extra" || { echo "unexpected files in wheel:"; echo "$extra"; exit 1; }
+      - run: uv publish --trusted-publishing always
