@@ -87,3 +87,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the Apache 2.0 License - see the LICENSE file for details. 
+## Releasing
+
+Bump `version` in `pyproject.toml` and `__version__` in `django_genc/__init__.py`, merge, then publish a GitHub release tagged `v<version>`.
+The `Publish to PyPI` workflow builds and uploads it through PyPI trusted publishing; it fails if the tag and version disagree or the wheel carries anything outside `django_genc/`.
